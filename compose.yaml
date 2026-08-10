@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: marketpulse
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: parool
+    ports:
+      - "5433:5432"
