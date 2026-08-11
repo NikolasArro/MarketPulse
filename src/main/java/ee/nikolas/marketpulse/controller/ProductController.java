@@ -27,4 +27,12 @@ public class ProductController {
     ) {
         return productService.saveProduct(productRequestDto);
     }
+
+    @GetMapping("/search")
+    public List<ProductResponseDto> searchProducts(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return productService.searchProducts(query, limit);
+    }
 }

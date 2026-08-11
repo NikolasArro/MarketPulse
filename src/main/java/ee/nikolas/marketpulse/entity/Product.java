@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Getter
@@ -32,7 +34,7 @@ public class Product {
     @Column(nullable = false)
     private String title;
 
-    private Double price;
+    private BigDecimal price;
 
     private String currency;
 
@@ -47,4 +49,22 @@ public class Product {
     private Double popularityScore;
 
     private LocalDateTime fetchedAt;
+
+    private Double sellerFeedbackPercentage;
+
+    private Integer sellerFeedbackScore;
+
+    private String sellerAccountType;
+
+    private String conditionId;
+
+    private String itemCountry;
+
+    private Boolean topRatedBuyingExperience;
+
+    private Boolean priorityListing;
+
+    private Boolean availableCoupons;
+
+    private Instant itemCreationDate;
 }
