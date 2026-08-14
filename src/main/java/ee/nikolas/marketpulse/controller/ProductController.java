@@ -35,4 +35,11 @@ public class ProductController {
     ) {
         return productService.searchProducts(query, limit);
     }
+
+    @GetMapping("/popular")
+    public List<ProductResponseDto> getPopularProducts(
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return productService.getPopularProducts(limit);
+    }
 }

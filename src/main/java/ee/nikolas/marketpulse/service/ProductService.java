@@ -11,6 +11,7 @@ import ee.nikolas.marketpulse.mapper.EbayProductMapper;
 import ee.nikolas.marketpulse.mapper.ProductMapper;
 import ee.nikolas.marketpulse.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -120,5 +121,16 @@ public class ProductService {
         );
 
         return productRepository.save(product);
+    }
+
+    public List<ProductResponseDto> getPopularProducts(int limit) {
+
+        return productRepository
+                .findAllByOrderByPopularityScoreDesc(
+                        Pageable.ofSize(limit)
+                )
+                .stream()
+                .map(productMapper::toResponseDto)
+                .toList();
     }
 }
