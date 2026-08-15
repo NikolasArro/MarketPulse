@@ -56,18 +56,20 @@ public class ProductController {
         return productSnapshotService.getHistory(id);
     }
 
-    @GetMapping("/{id}/trend")
-    public ProductTrendResponseDto getProductTrend(
-            @PathVariable Long id
-    ) {
-        return productTrendService.getTrend(id);
-    }
-
     @GetMapping("/trending")
     public List<ProductTrendResponseDto> getTrendingProducts(
+            @RequestParam String query,
             @RequestParam(defaultValue = "10") int limit
     ) {
         return productTrendService
-                .getTrendingProducts(limit);
+                .getTrendingProducts(limit, query);
+    }
+
+    @GetMapping("/{id}/trend")
+    public ProductTrendResponseDto getProductTrend(
+            @PathVariable Long id,
+            @RequestParam String query
+    ) {
+        return productTrendService.getTrend(id, query);
     }
 }

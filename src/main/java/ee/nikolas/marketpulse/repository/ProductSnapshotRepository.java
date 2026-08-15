@@ -11,6 +11,8 @@ public interface ProductSnapshotRepository
     List<ProductSnapshot>
     findByProductIdOrderByCapturedAtAsc(Long productId);
 
-    List<ProductSnapshot>
-    findTop2ByProductIdOrderByCapturedAtDesc(Long productId);
+    List<ProductSnapshot> findTop2ByProductIdAndSearchQuery_QueryOrderByCapturedAtDesc(
+            Long productId,
+            String query
+    );
 }

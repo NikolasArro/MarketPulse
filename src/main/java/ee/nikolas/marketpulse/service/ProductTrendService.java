@@ -20,7 +20,7 @@ public class ProductTrendService {
     private final ProductRepository productRepository;
     private final ProductSnapshotRepository snapshotRepository;
 
-    public ProductTrendResponseDto getTrend(Long productId) {
+    public ProductTrendResponseDto getTrend(Long productId, String query) {
 
         Product product = productRepository
                 .findById(productId)
@@ -32,8 +32,9 @@ public class ProductTrendService {
 
         List<ProductSnapshot> snapshots =
                 snapshotRepository
-                        .findTop2ByProductIdOrderByCapturedAtDesc(
-                                productId
+                        .findTop2ByProductIdAndSearchQuery_QueryOrderByCapturedAtDesc(
+                                productId,
+                                query
                         );
 
         if (snapshots.size() < 2) {
@@ -241,16 +242,16 @@ public class ProductTrendService {
     }
 
     public List<ProductTrendResponseDto> getTrendingProducts(
-            int limit
+            int limit,
+            String query
     ) {
 
-        int safeLimit =
-                Math.clamp(limit, 1, 100);
+        int safeLimit = Math.clamp(limit, 1, 100);
 
         return productRepository
                 .findAll()
                 .stream()
-                .map(product -> getTrend(product.getId()))
+                .map(product -> getTrend(product.getId(), query))
                 .filter(trend ->
                         trend.trend()
                                 != TrendDirection.NOT_ENOUGH_DATA

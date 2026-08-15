@@ -7,9 +7,11 @@ import ee.nikolas.marketpulse.dto.ProductRequestDto;
 import ee.nikolas.marketpulse.dto.ProductResponseDto;
 import ee.nikolas.marketpulse.entity.Marketplace;
 import ee.nikolas.marketpulse.entity.Product;
+import ee.nikolas.marketpulse.entity.SearchQuery;
 import ee.nikolas.marketpulse.mapper.EbayProductMapper;
 import ee.nikolas.marketpulse.mapper.ProductMapper;
 import ee.nikolas.marketpulse.repository.ProductRepository;
+import ee.nikolas.marketpulse.repository.SearchQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,8 @@ public class ProductService {
     private final PopularityScoreService popularityScoreService;
     private final ProductSnapshotService productSnapshotService;
 
+    private final SearchQueryRepository searchQueryRepository;
+
     public List<ProductResponseDto> getAllProducts() {
         return productRepository.findAll()
                 .stream()
@@ -50,6 +54,15 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> searchProducts(String query, int limit) {
+
+        SearchQuery searchQuery = new SearchQuery();
+        searchQuery.setQuery(query);
+        searchQuery.setMarketplace(Marketplace.EBAY);
+        searchQuery.setSearchedAt(LocalDateTime.now());
+
+        SearchQuery savedSearchQuery =
+                searchQueryRepository.save(searchQuery);
+
         EbaySearchResponse response = ebayClient.search(query, limit);
 
         if (response == null || response.itemSummaries() == null) {
@@ -61,7 +74,7 @@ public class ProductService {
         int position = 1;
 
         for (EbayItemSummary item : response.itemSummaries()) {
-            Product product = saveOrUpdateEbayProduct(item, position);
+            Product product = saveOrUpdateEbayProduct(item, position, searchQuery);
 
             result.add(productMapper.toResponseDto(product));
 
@@ -71,7 +84,7 @@ public class ProductService {
         return result;
     }
 
-    private Product saveOrUpdateEbayProduct(EbayItemSummary item, int searchPosition) {
+    private Product saveOrUpdateEbayProduct(EbayItemSummary item, int searchPosition, SearchQuery searchQuery) {
         Product product = productRepository
                             .findByExternalIdAndMarketplace(item.itemId(), Marketplace.EBAY)
                             .orElseGet(
@@ -124,7 +137,7 @@ public class ProductService {
         Product savedProduct =
                 productRepository.save(product);
 
-        productSnapshotService.createSnapshot(savedProduct);
+        productSnapshotService.createSnapshot(savedProduct, searchQuery);
 
         return productRepository.save(product);
     }

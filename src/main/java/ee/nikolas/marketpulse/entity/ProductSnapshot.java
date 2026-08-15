@@ -19,6 +19,9 @@ public class ProductSnapshot {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Product product;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private SearchQuery searchQuery;
+
     private BigDecimal price;
 
     private Integer searchPosition;

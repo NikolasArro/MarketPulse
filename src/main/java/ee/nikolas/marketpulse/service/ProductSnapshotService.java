@@ -3,6 +3,7 @@ package ee.nikolas.marketpulse.service;
 import ee.nikolas.marketpulse.dto.ProductSnapshotResponseDto;
 import ee.nikolas.marketpulse.entity.Product;
 import ee.nikolas.marketpulse.entity.ProductSnapshot;
+import ee.nikolas.marketpulse.entity.SearchQuery;
 import ee.nikolas.marketpulse.repository.ProductSnapshotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,13 @@ public class ProductSnapshotService {
 
     private final ProductSnapshotRepository snapshotRepository;
 
-    public void createSnapshot(Product product) {
+    public void createSnapshot(Product product, SearchQuery searchQuery) {
 
         ProductSnapshot snapshot =
                 new ProductSnapshot();
 
         snapshot.setProduct(product);
+        snapshot.setSearchQuery(searchQuery);
         snapshot.setPrice(product.getPrice());
         snapshot.setSearchPosition(
                 product.getSearchPosition()
