@@ -29,6 +29,7 @@ public class ProductService {
     private final EbayProductMapper ebayProductMapper;
 
     private final PopularityScoreService popularityScoreService;
+    private final ProductSnapshotService productSnapshotService;
 
     public List<ProductResponseDto> getAllProducts() {
         return productRepository.findAll()
@@ -78,7 +79,7 @@ public class ProductService {
                                             .toProduct(item, searchPosition)
                             );
 
-//        Kui Product juba olemas, uuendame andmed.
+//      Kui Product juba olemas, uuendame andmed.
 
         if (item.seller() != null) {
             if (item.seller().feedbackPercentage() != null) {
@@ -120,14 +121,21 @@ public class ProductService {
                 popularityScoreService.calculate(product)
         );
 
+        Product savedProduct =
+                productRepository.save(product);
+
+        productSnapshotService.createSnapshot(savedProduct);
+
         return productRepository.save(product);
     }
 
     public List<ProductResponseDto> getPopularProducts(int limit) {
 
+        int safeLimit = Math.clamp(limit, 1, 100);
+
         return productRepository
                 .findAllByOrderByPopularityScoreDesc(
-                        Pageable.ofSize(limit)
+                        Pageable.ofSize(safeLimit)
                 )
                 .stream()
                 .map(productMapper::toResponseDto)
