@@ -1,9 +1,12 @@
 package ee.nikolas.marketpulse.service;
 
+import ee.nikolas.marketpulse.dto.ProductTrendResponseDto;
 import ee.nikolas.marketpulse.dto.TrackedKeywordRequestDto;
 import ee.nikolas.marketpulse.dto.TrackedKeywordResponseDto;
+import ee.nikolas.marketpulse.dto.TrackedKeywordSummaryDto;
 import ee.nikolas.marketpulse.entity.Marketplace;
 import ee.nikolas.marketpulse.entity.TrackedKeyword;
+import ee.nikolas.marketpulse.model.TrendDirection;
 import ee.nikolas.marketpulse.repository.TrackedKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
@@ -16,6 +19,7 @@ import java.util.List;
 public class TrackedKeywordService {
 
     private final TrackedKeywordRepository repository;
+    private final ProductTrendService productTrendService;
 
     public List<TrackedKeywordResponseDto> getAll() {
         return repository.findAll()
@@ -104,6 +108,71 @@ public class TrackedKeywordService {
                 entity.isActive(),
                 entity.getSearchLimit(),
                 entity.getLastSearchedAt()
+        );
+    }
+
+    public TrackedKeywordSummaryDto getSummary(Long id) {
+
+        TrackedKeyword trackedKeyword = findById(id);
+
+        List<ProductTrendResponseDto> trends =
+                productTrendService.getAllTrendsForQuery(
+                        trackedKeyword.getKeyword()
+                );
+
+        long rising = trends.stream()
+                .filter(trend ->
+                        trend.trend() == TrendDirection.RISING
+                )
+                .count();
+
+        long falling = trends.stream()
+                .filter(trend ->
+                        trend.trend() == TrendDirection.FALLING
+                )
+                .count();
+
+        long stable = trends.stream()
+                .filter(trend ->
+                        trend.trend() == TrendDirection.STABLE
+                )
+                .count();
+
+        long notEnoughData = trends.stream()
+                .filter(trend ->
+                        trend.trend() == TrendDirection.NOT_ENOUGH_DATA
+                )
+                .count();
+
+        List<ProductTrendResponseDto> topTrending =
+                trends.stream()
+                        .filter(trend ->
+                                trend.trend()
+                                        != TrendDirection.NOT_ENOUGH_DATA
+                        )
+                        .sorted(
+                                (a, b) ->
+                                        Double.compare(
+                                                b.trendScore(),
+                                                a.trendScore()
+                                        )
+                        )
+                        .limit(5)
+                        .toList();
+
+        return new TrackedKeywordSummaryDto(
+                trackedKeyword.getId(),
+                trackedKeyword.getKeyword(),
+                trackedKeyword.isActive(),
+                trackedKeyword.getLastSearchedAt(),
+
+                trends.size(),
+                rising,
+                falling,
+                stable,
+                notEnoughData,
+
+                topTrending
         );
     }
 }

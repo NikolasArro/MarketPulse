@@ -2,6 +2,7 @@ package ee.nikolas.marketpulse.controller;
 
 import ee.nikolas.marketpulse.dto.TrackedKeywordRequestDto;
 import ee.nikolas.marketpulse.dto.TrackedKeywordResponseDto;
+import ee.nikolas.marketpulse.dto.TrackedKeywordSummaryDto;
 import ee.nikolas.marketpulse.service.TrackedKeywordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,5 +44,12 @@ public class TrackedKeywordController {
             @PathVariable Long id
     ) {
         service.delete(id);
+    }
+
+    @GetMapping("/{id}/summary")
+    public TrackedKeywordSummaryDto getSummary(
+            @PathVariable Long id
+    ) {
+        return service.getSummary(id);
     }
 }

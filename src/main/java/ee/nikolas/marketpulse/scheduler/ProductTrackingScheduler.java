@@ -3,7 +3,6 @@ package ee.nikolas.marketpulse.scheduler;
 import ee.nikolas.marketpulse.entity.TrackedKeyword;
 import ee.nikolas.marketpulse.repository.TrackedKeywordRepository;
 import ee.nikolas.marketpulse.service.ProductService;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -64,10 +63,5 @@ public class ProductTrackingScheduler {
                 );
             }
         }
-    }
-
-    @PostConstruct
-    public void init() {
-        log.info("ProductTrackingScheduler initialized");
     }
 }

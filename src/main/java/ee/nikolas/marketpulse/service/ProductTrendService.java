@@ -266,4 +266,19 @@ public class ProductTrendService {
                 .limit(safeLimit)
                 .toList();
     }
+
+    public List<ProductTrendResponseDto> getAllTrendsForQuery(
+            String query
+    ) {
+        return productRepository
+                .findAll()
+                .stream()
+                .map(product ->
+                        getTrend(
+                                product.getId(),
+                                query
+                        )
+                )
+                .toList();
+    }
 }
