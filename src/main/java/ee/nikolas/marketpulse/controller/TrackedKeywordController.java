@@ -4,6 +4,7 @@ import ee.nikolas.marketpulse.dto.TrackedKeywordRequestDto;
 import ee.nikolas.marketpulse.dto.TrackedKeywordResponseDto;
 import ee.nikolas.marketpulse.dto.TrackedKeywordSummaryDto;
 import ee.nikolas.marketpulse.service.TrackedKeywordService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class TrackedKeywordController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TrackedKeywordResponseDto create(
-            @RequestBody TrackedKeywordRequestDto request
+            @Valid @RequestBody TrackedKeywordRequestDto request
     ) {
         return service.create(request);
     }

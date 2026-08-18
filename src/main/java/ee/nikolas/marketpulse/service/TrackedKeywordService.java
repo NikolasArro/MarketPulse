@@ -6,6 +6,8 @@ import ee.nikolas.marketpulse.dto.TrackedKeywordResponseDto;
 import ee.nikolas.marketpulse.dto.TrackedKeywordSummaryDto;
 import ee.nikolas.marketpulse.entity.Marketplace;
 import ee.nikolas.marketpulse.entity.TrackedKeyword;
+import ee.nikolas.marketpulse.exception.DuplicateTrackedKeywordException;
+import ee.nikolas.marketpulse.exception.TrackedKeywordNotFoundException;
 import ee.nikolas.marketpulse.model.TrendDirection;
 import ee.nikolas.marketpulse.repository.TrackedKeywordRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,16 +35,8 @@ public class TrackedKeywordService {
     ) {
         String keyword = request.keyword().trim();
 
-        if (keyword.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Keyword cannot be empty"
-            );
-        }
-
         if (repository.existsByKeywordIgnoreCase(keyword)) {
-            throw new IllegalArgumentException(
-                    "Keyword is already tracked: " + keyword
-            );
+            throw new DuplicateTrackedKeywordException(keyword);
         }
 
         TrackedKeyword trackedKeyword = getTrackedKeyword(request, keyword);
@@ -65,7 +59,9 @@ public class TrackedKeywordService {
         );
 
         trackedKeyword.setSearchLimit(
-                request.searchLimit() != null ? Math.clamp(request.searchLimit(), 1, 100) : 20
+                request.searchLimit() != null
+                        ? request.searchLimit()
+                        : 20
         );
 
         trackedKeyword.setActive(true);
@@ -92,9 +88,7 @@ public class TrackedKeywordService {
     private TrackedKeyword findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Tracked keyword not found: " + id
-                        )
+                        new TrackedKeywordNotFoundException(id)
                 );
     }
 

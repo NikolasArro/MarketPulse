@@ -3,6 +3,7 @@ package ee.nikolas.marketpulse.service;
 import ee.nikolas.marketpulse.dto.ProductTrendResponseDto;
 import ee.nikolas.marketpulse.entity.Product;
 import ee.nikolas.marketpulse.entity.ProductSnapshot;
+import ee.nikolas.marketpulse.exception.ProductNotFoundException;
 import ee.nikolas.marketpulse.model.TrendDirection;
 import ee.nikolas.marketpulse.repository.ProductRepository;
 import ee.nikolas.marketpulse.repository.ProductSnapshotRepository;
@@ -25,9 +26,7 @@ public class ProductTrendService {
         Product product = productRepository
                 .findById(productId)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Product not found: " + productId
-                        )
+                        new ProductNotFoundException(productId)
                 );
 
         List<ProductSnapshot> snapshots =
